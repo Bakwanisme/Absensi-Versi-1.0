@@ -851,7 +851,6 @@
             document.getElementById('nav-user-role').innerText = userData.role === 'admin' ? 'Administrator' : `Guru Kelas ${userData.kelas}`;
             document.getElementById('lblKelas').innerText = userData.kelas || '-';
             
-            // Otomatisasi nama, label penandatangan, dan NIP/Username pada lembar cetak
             const labelPenandatanganEl = document.getElementById('print-label-penandatangan');
             const nipGuruEl = document.getElementById('print-nip-guru');
             const namaGuruEl = document.getElementById('print-nama-guru');
@@ -872,9 +871,9 @@
             document.getElementById('menu-guru').classList.add('hidden');
             document.getElementById('menu-admin').classList.add('hidden');
             
-            // Auto pre-fetch data siswa untuk validasi QR Scanner
+            // Auto pre-fetch data siswa & riwayat dari server GAS
             await fetchStudentListSilent();
-            await fetchServerData();
+            await fetchServerData(); // <--- TAMBAHKAN BARIS INI AGAR DATA ABSENSI & JURNAL TERTARIK DARI SHEET
 
             if (userData.role === 'guru') {
                 document.getElementById('menu-guru').classList.remove('hidden');
@@ -885,7 +884,7 @@
             }
             
             showToast(`Selamat datang, ${userData.nama || userData.username}!`, "success");
-        }
+       }
 
         // --- CAMERA & SCANNER ABSENSI ---
         function startScanner() {
