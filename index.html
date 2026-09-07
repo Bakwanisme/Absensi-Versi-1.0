@@ -874,6 +874,7 @@
             
             // Auto pre-fetch data siswa untuk validasi QR Scanner
             await fetchStudentListSilent();
+            await fetchServerData();
 
             if (userData.role === 'guru') {
                 document.getElementById('menu-guru').classList.remove('hidden');
@@ -1884,6 +1885,24 @@ function ubahStatusAbsensiInteraktif(nisn, tanggal, statusBaru) {
     renderLaporanUI();
 }
         
+async function fetchServerData() {
+    if (state.isMockMode) return;
+    try {
+        const res = await fetch(state.gasUrl, {
+            method: 'POST',
+            body: JSON.stringify({ action: "getAllData", sheetId: state.sheetId })
+        });
+        const result = await res.json();
+        if (result.status === 'success') {
+            if (result.absensi) state.mockAbsensi = result.absensi;
+            if (result.jurnal) state.mockJurnal = result.jurnal;
+            updateRecentScans();
+            renderRiwayatJurnalGuru();
+        }
+    } catch (err) {
+        console.error("Gagal memuat data riwayat dari server:", err);
+    }
+}    
     </script>
 </body>
 </html>
