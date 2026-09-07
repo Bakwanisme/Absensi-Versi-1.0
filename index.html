@@ -262,54 +262,90 @@
                 </div>
             </div>
 
-            <!-- TAB GURU: JURNAL -->
+            <!-- TAB GURU: JURNAL & CATATAN SISWA -->
             <div id="tab-guru-jurnal" class="tab-content hidden">
-                <h2 class="text-3xl font-extrabold text-gray-800 mb-2">Jurnal Pembelajaran</h2>
-                <p class="text-gray-500 font-semibold mb-6">Catat aktivitas belajar mengajar harian.</p>
+                <h2 class="text-3xl font-extrabold text-gray-800 mb-2">Jurnal Pembelajaran & Log Siswa</h2>
+                <p class="text-gray-500 font-semibold mb-6">Isi materi sekali, lalu tambahkan daftar catatan siswa di bawahnya.</p>
 
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 max-w-3xl">
-                    <form id="jurnalForm" class="space-y-5">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1">Tanggal</label>
-                                <input type="date" id="jurnalTanggal" class="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50 focus:outline-none" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1">Jam Pelajaran (JP) Aktif <i class="fas fa-bolt text-accent ml-1" title="Otomatis Deteksi Jam"></i></label>
-                                <select id="jurnalJp" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary font-bold">
-                                    <option value="JP 1-2 (07:00 - 08:10)">JP 1-2 (07:00 - 08:10)</option>
-                                    <option value="JP 3-4 (08:10 - 09:20)">JP 3-4 (08:10 - 09:20)</option>
-                                    <option value="JP 5-6 (09:50 - 11:00)">JP 5-6 (09:50 - 11:00)</option>
-                                    <option value="Ekskul / Tambahan">Ekskul / Tambahan</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">Mata Pelajaran</label>
-                            <input type="text" id="jurnalMapel" placeholder="Contoh: Matematika / Bahasa Indonesia" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">Ringkasan Materi</label>
-                            <textarea id="jurnalMateri" rows="3" placeholder="Apa materi pembelajaran yang diajarkan hari ini?" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
-                        </div>
-
-                        <div class="border-t pt-4">
-                            <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-user-edit text-primary mr-2"></i>Log Catatan Karakter Siswa</h4>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                                <div class="md:col-span-2">
-                                    <input type="text" id="jurnalCatatan" placeholder="Nama Siswa: Catatan (Cth: Budi sangat aktif bertanya)" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 max-w-4xl">
+                    <form id="jurnalForm" onsubmit="submitJurnalGabungan(event)" class="space-y-6">
+                        <!-- BAGIAN 1: INFORMASI MENGAJAR (Cukup diisi sekali) -->
+                        <div class="p-4 bg-blue-50 rounded-2xl border border-blue-100 space-y-4">
+                            <h3 class="font-bold text-gray-800 text-base"><i class="fas fa-book-open text-primary mr-2"></i>Informasi Pembelajaran</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">Tanggal</label>
+                                    <input type="date" id="jurnalTanggal" class="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none">
                                 </div>
                                 <div>
-                                    <select id="jurnalTipeCatatan" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary">
-                                        <option value="Positif">Karakter Positif 🌟</option>
-                                        <option value="Evaluasi">Perlu Evaluasi ⚠️</option>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">Jam Pelajaran (JP) Aktif</label>
+                                    <select id="jurnalJp" class="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none font-bold">
+                                        <option value="JP 1-2 (07:00 - 08:10)">JP 1-2 (07:00 - 08:10)</option>
+                                        <option value="JP 3-4 (08:10 - 09:20)">JP 3-4 (08:10 - 09:20)</option>
+                                        <option value="JP 5-6 (09:50 - 11:00)">JP 5-6 (09:50 - 11:00)</option>
+                                        <option value="Ekskul / Tambahan">Ekskul / Tambahan</option>
                                     </select>
                                 </div>
                             </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Mata Pelajaran</label>
+                                <input type="text" id="jurnalMapel" placeholder="Contoh: Matematika" class="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Ringkasan Materi</label>
+                                <textarea id="jurnalMateri" rows="2" placeholder="Ringkasan materi yang diajarkan..." class="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none"></textarea>
+                            </div>
                         </div>
+
+                        <!-- BAGIAN 2: DAFTAR LOG CATATAN SISWA (Bisa tambah banyak baris) -->
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-bold text-gray-800 text-base"><i class="fas fa-users text-primary mr-2"></i>Log Catatan Karakter / Perilaku Siswa</h3>
+                                <button type="button" onclick="tambahBarisSiswa()" class="bg-blue-100 text-primary hover:bg-blue-200 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors">
+                                    <i class="fas fa-plus mr-1"></i> Tambah Siswa
+                                </button>
+                            </div>
+                            
+                            <div id="containerListSiswa" class="space-y-3">
+                                <!-- Baris pertama default -->
+                                <div class="row-siswa flex gap-2 items-center bg-gray-50 p-3 rounded-2xl border border-gray-200">
+                                    <input type="text" placeholder="Nama Siswa" class="input-nama-siswa flex-1 px-3 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:outline-none">
+                                    <input type="text" placeholder="Catatan/Perilaku" class="input-catatan-siswa flex-2 px-3 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:outline-none" style="flex: 2;">
+                                    <select class="input-tipe-siswa px-3 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:outline-none font-bold">
+                                        <option value="Positif">🌟 Positif</option>
+                                        <option value="Evaluasi">⚠️ Evaluasi</option>
+                                    </select>
+                                    <button type="button" onclick="hapusBarisSiswa(this)" class="text-red-500 hover:text-red-700 p-2"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-primary hover:bg-primaryDark text-white font-bold py-3.5 px-4 rounded-xl transition-colors custom-shadow mt-4">
+                            Simpan Jurnal & Catatan <i class="fas fa-save ml-2"></i>
+                        </button>
+                    </form>
+                                <!-- TABEL RIWAYAT JURNAL HARI INI (DI BAWAH FORM) -->
+                        <div class="mt-8 pt-6 border-t border-gray-200">
+                            <h3 class="font-bold text-gray-800 text-lg mb-3"><i class="fas fa-history text-primary mr-2"></i>Riwayat Jurnal & Catatan Hari Ini</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse text-sm">
+                                    <thead class="bg-gray-50 text-gray-600">
+                                        <tr>
+                                            <th class="p-3 border-b">Jam / Mapel</th>
+                                            <th class="p-3 border-b">Ringkasan Materi</th>
+                                            <th class="p-3 border-b">Catatan Siswa</th>
+                                            <th class="p-3 border-b text-center">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tabelRiwayatJurnalGuru">
+                                        <tr><td colspan="4" class="text-center p-4 text-gray-400 italic">Belum ada jurnal yang diinput hari ini.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                </div>
+            </div>
+
 
                         <button type="button" onclick="submitJurnal()" class="w-full bg-primary hover:bg-primaryDark text-white font-bold py-3 px-4 rounded-xl transition-colors custom-shadow mt-4">
                             Simpan Jurnal <i class="fas fa-save ml-2"></i>
@@ -1061,14 +1097,26 @@
             if (state.mockJurnal.length === 0) {
                 tbodyJurnal.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-gray-500">Belum ada data jurnal hari ini</td></tr>`;
             } else {
-                tbodyJurnal.innerHTML = state.mockJurnal.map(j => `
-                    <tr>
-                        <td class="border p-2">${j.tanggal} (${j.jamJp})</td>
-                        <td class="border p-2 font-bold">${j.mataPelajaran}</td>
-                        <td class="border p-2">${j.ringkasanMateri}</td>
-                        <td class="border p-2">${j.catatanSiswa ? `${j.catatanSiswa} [${j.tipeCatatan}]` : '-'}</td>
-                    </tr>
-                `).join('');
+                tbodyJurnal.innerHTML = state.mockJurnal.map(j => {
+                    // Gabungkan daftar siswa menjadi list list HTML di dalam satu sel
+                    let listSiswaHtml = "-";
+                    if (j.catatanSiswaList && j.catatanSiswaList.length > 0) {
+                        listSiswaHtml = `<ul class="list-disc pl-4 space-y-1">` + j.catatanSiswaList.map(s => `
+                            <li><strong>${s.nama}</strong>: ${s.catatan} <span class="text-xs px-1.5 py-0.2 rounded font-bold ${s.tipe === 'Positif' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800'}">[${s.tipe}]</span></li>
+                        `).join('') + `</ul>`;
+                    } else if (j.catatanSiswa) {
+                        listSiswaHtml = `<strong>${j.catatanSiswa}</strong> [${j.tipeCatatan || ''}]`;
+                    }
+
+                    return `
+                        <tr>
+                            <td class="border p-2 align-top">${j.tanggal} <br><span class="text-xs text-gray-500 font-bold">${j.jamJp || ''}</span></td>
+                            <td class="border p-2 align-top font-bold">${j.mataPelajaran}</td>
+                            <td class="border p-2 align-top">${j.ringkasanMateri}</td>
+                            <td class="border p-2 align-top">${listSiswaHtml}</td>
+                        </tr>
+                    `;
+                }).join('');
             }
         }
 
@@ -1456,10 +1504,19 @@
         }
 
         // --- INIT APP ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const today = new Date().toISOString().split('T')[0];
-            const elTgl = document.getElementById('jurnalTanggal');
-            if (elTgl) elTgl.value = today;
+            document.addEventListener('DOMContentLoaded', () => {
+            // Mengambil tanggal hari ini secara dinamis dan akurat berdasarkan perangkat lokal
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const today = `${year}-${month}-${day}`;
+
+            const elTglJurnal = document.getElementById('jurnalTanggal');
+            if (elTglJurnal) elTglJurnal.value = today;
+
+            const elTglCatatan = document.getElementById('catatanTanggal');
+            if (elTglCatatan) elTglCatatan.value = today;
 
             if (state.sheetId) document.getElementById('settingSheetId').value = state.sheetId;
             if (state.gasUrl) {
@@ -1474,6 +1531,188 @@
                 }
             }, 1000);
         });
+
+// Fungsi untuk menambah baris input siswa secara dinamis
+function tambahBarisSiswa() {
+    const container = document.getElementById('containerListSiswa');
+    const newRow = document.createElement('div');
+    newRow.className = "row-siswa flex gap-2 items-center bg-gray-50 p-3 rounded-2xl border border-gray-200";
+    newRow.innerHTML = `
+        <input type="text" placeholder="Nama Siswa" class="input-nama-siswa flex-1 px-3 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:outline-none">
+        <input type="text" placeholder="Catatan/Perilaku" class="input-catatan-siswa flex-2 px-3 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:outline-none" style="flex: 2;">
+        <select class="input-tipe-siswa px-3 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:outline-none font-bold">
+            <option value="Positif">🌟 Positif</option>
+            <option value="Evaluasi">⚠️ Evaluasi</option>
+        </select>
+        <button type="button" onclick="hapusBarisSiswa(this)" class="text-red-500 hover:text-red-700 p-2"><i class="fas fa-trash"></i></button>
+    `;
+    container.appendChild(newRow);
+}
+
+// Fungsi untuk menghapus baris input siswa
+function hapusBarisSiswa(btn) {
+    const rows = document.querySelectorAll('.row-siswa');
+    if (rows.length > 1) {
+        btn.closest('.row-siswa').remove();
+    } else {
+        showToast("Minimal harus ada satu baris catatan siswa!", "warning");
+    }
+}
+
+// Fungsi Submit Jurnal dengan Banyak Siswa Sekaligus
+async function submitJurnalGabungan(e) {
+    e.preventDefault();
+    const tanggal = document.getElementById('jurnalTanggal').value;
+    const jp = document.getElementById('jurnalJp').value;
+    const mapel = document.getElementById('jurnalMapel').value.trim();
+    const materi = document.getElementById('jurnalMateri').value.trim();
+
+    if (!mapel || !materi) {
+        return showToast("Mata pelajaran dan ringkasan materi wajib diisi!", "warning");
+    }
+
+    // Ambil semua data dari baris-baris siswa
+    const rowSiswaElements = document.querySelectorAll('.row-siswa');
+    const listCatatanSiswa = [];
+
+    rowSiswaElements.forEach(row => {
+        const nama = row.querySelector('.input-nama-siswa').value.trim();
+        const catatan = row.querySelector('.input-catatan-siswa').value.trim();
+        const tipe = row.querySelector('.input-tipe-siswa').value;
+        if (nama) {
+            listCatatanSiswa.push({ nama, catatan, tipe });
+        }
+    });
+
+    const payloadData = {
+        tanggal,
+        jamJp: jp,
+        mataPelajaran: mapel,
+        ringkasanMateri: materi,
+        catatanSiswaList: listCatatanSiswa,
+        timestamp: new Date().toISOString()
+    };
+
+    state.mockJurnal.unshift(payloadData);
+    renderRiwayatJurnalGuru();
+    showToast("Jurnal dan catatan siswa berhasil disimpan!", "success");
+
+    // Reset form setelah simpan
+    document.getElementById('jurnalMapel').value = '';
+    document.getElementById('jurnalMateri').value = '';
+    document.getElementById('containerListSiswa').innerHTML = `
+        <div class="row-siswa flex gap-2 items-center bg-gray-50 p-3 rounded-2xl border border-gray-200">
+            <input type="text" placeholder="Nama Siswa" class="input-nama-siswa flex-1 px-3 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:outline-none">
+            <input type="text" placeholder="Catatan/Perilaku" class="input-catatan-siswa flex-2 px-3 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:outline-none" style="flex: 2;">
+            <select class="input-tipe-siswa px-3 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:outline-none font-bold">
+                <option value="Positif">🌟 Positif</option>
+                <option value="Evaluasi">⚠️ Evaluasi</option>
+            </select>
+            <button type="button" onclick="hapusBarisSiswa(this)" class="text-red-500 hover:text-red-700 p-2"><i class="fas fa-trash"></i></button>
+        </div>
+    `;
+
+    // Kirim ke Backend Google Apps Script
+    if (!state.isMockMode && state.gasUrl) {
+        try {
+            await fetch(state.gasUrl, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: "saveJournalMulti",
+                    sheetId: state.sheetId,
+                    ...payloadData
+                })
+            });
+        } catch (e) {
+            console.error("Gagal sync jurnal multi:", e);
+        }
+    }
+}
+
+        // Fungsi untuk memperbarui tampilan tabel riwayat di bawah form jurnal
+function renderRiwayatJurnalGuru() {
+    const tbody = document.getElementById('tabelRiwayatJurnalGuru');
+    if (!tbody) return;
+
+    if (state.mockJurnal.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-gray-400 italic">Belum ada jurnal yang diinput hari ini.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = state.mockJurnal.map((j, index) => {
+        let listSiswaHtml = "-";
+        if (j.catatanSiswaList && j.catatanSiswaList.length > 0) {
+            listSiswaHtml = `<ul class="list-disc pl-4 space-y-0.5">` + j.catatanSiswaList.map(s => `
+                <li><strong>${s.nama}</strong>: ${s.catatan} <span class="text-xs px-1 py-0.2 rounded font-bold ${s.tipe === 'Positif' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800'}">[${s.tipe}]</span></li>
+            `).join('') + `</ul>`;
+        }
+
+        return `
+            <tr class="border-b hover:bg-gray-50">
+                <td class="p-3 align-top font-bold text-gray-800">${j.jamJp}<br><span class="text-primary">${j.mataPelajaran}</span></td>
+                <td class="p-3 align-top text-gray-600">${j.ringkasanMateri}</td>
+                <td class="p-3 align-top text-gray-600">${listSiswaHtml}</td>
+                <td class="p-3 align-top text-center">
+                    <button type="button" onclick="editJurnal(${index})" class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-2.5 py-1 rounded-lg text-xs font-bold mr-1 mb-1">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button type="button" onclick="hapusJurnal(${index})" class="bg-red-100 text-red-600 hover:bg-red-200 px-2.5 py-1 rounded-lg text-xs font-bold">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Fungsi untuk memasukkan kembali data jurnal ke form saat tombol Edit diklik
+function editJurnal(index) {
+    const j = state.mockJurnal[index];
+    if (!j) return;
+
+    document.getElementById('jurnalTanggal').value = j.tanggal || '';
+    document.getElementById('jurnalJp').value = j.jamJp || '';
+    document.getElementById('jurnalMapel').value = j.mataPelajaran || '';
+    document.getElementById('jurnalMateri').value = j.ringkasanMateri || '';
+
+    // Muat kembali daftar siswa ke baris dinamis
+    const container = document.getElementById('containerListSiswa');
+    container.innerHTML = '';
+
+    if (j.catatanSiswaList && j.catatanSiswaList.length > 0) {
+        j.catatanSiswaList.forEach(s => {
+            const row = document.createElement('div');
+            row.className = "row-siswa flex gap-2 items-center bg-gray-50 p-3 rounded-2xl border border-gray-200";
+            row.innerHTML = `
+                <input type="text" value="${s.nama}" placeholder="Nama Siswa" class="input-nama-siswa flex-1 px-3 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:outline-none">
+                <input type="text" value="${s.catatan}" placeholder="Catatan/Perilaku" class="input-catatan-siswa flex-2 px-3 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:outline-none" style="flex: 2;">
+                <select class="input-tipe-siswa px-3 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:outline-none font-bold">
+                    <option value="Positif" ${s.tipe === 'Positif' ? 'selected' : ''}>🌟 Positif</option>
+                    <option value="Evaluasi" ${s.tipe === 'Evaluasi' ? 'selected' : ''}>⚠️ Evaluasi</option>
+                </select>
+                <button type="button" onclick="hapusBarisSiswa(this)" class="text-red-500 hover:text-red-700 p-2"><i class="fas fa-trash"></i></button>
+            `;
+            container.appendChild(row);
+        });
+    } else {
+        tambahBarisSiswa();
+    }
+
+    // Hapus data lama dari memori sementara agar nantinya diperbarui dengan yang baru saat disubmit
+    state.mockJurnal.splice(index, 1);
+    renderRiwayatJurnalGuru();
+    showToast("Data dimuat ke form untuk diedit.", "info");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Fungsi untuk menghapus jurnal dari riwayat
+function hapusJurnal(index) {
+    if (!confirm("Apakah Anda yakin ingin menghapus data jurnal ini?")) return;
+    state.mockJurnal.splice(index, 1);
+    renderRiwayatJurnalGuru();
+    showToast("Data jurnal berhasil dihapus.", "success");
+}
+        
     </script>
 </body>
 </html>
