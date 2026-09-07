@@ -445,9 +445,9 @@
                     <p>NIP. 198609222009012003</p>
                 </div>
                 <div class="text-center">
-                    <p class="mb-16">Sumenep, <span class="print-tanggal">...</span><br>Guru Kelas</p>
+                    <p class="mb-16">Sumenep, <span class="print-tanggal">...</span><br><span id="print-label-penandatangan">Guru Kelas</span></p>
                     <p class="font-bold underline" id="print-nama-guru">Nama Guru</p>
-                    <p>NIP. .........................</p>
+                    <p>NIP. <span id="print-nip-guru">.........................</span></p>
                 </div>
             </div>
         </div>
@@ -849,8 +849,22 @@
             }
 
             document.getElementById('nav-user-role').innerText = userData.role === 'admin' ? 'Administrator' : `Guru Kelas ${userData.kelas}`;
-            document.getElementById('lblKelas').innerText = userData.kelas;
-            document.getElementById('print-nama-guru').innerText = userData.nama || userData.username;
+            document.getElementById('lblKelas').innerText = userData.kelas || '-';
+            
+            // Otomatisasi nama, label penandatangan, dan NIP/Username pada lembar cetak
+            const labelPenandatanganEl = document.getElementById('print-label-penandatangan');
+            const nipGuruEl = document.getElementById('print-nip-guru');
+            const namaGuruEl = document.getElementById('print-nama-guru');
+
+            if (userData.role === 'admin') {
+                if (labelPenandatanganEl) labelPenandatanganEl.innerText = "Administrator Sistem";
+                if (namaGuruEl) namaGuruEl.innerText = userData.nama || userData.username;
+                if (nipGuruEl) nipGuruEl.innerText = "-";
+            } else {
+                if (labelPenandatanganEl) labelPenandatanganEl.innerText = "Guru Kelas";
+                if (namaGuruEl) namaGuruEl.innerText = userData.nama || userData.username;
+                if (nipGuruEl) nipGuruEl.innerText = userData.username || ".........................";
+            }
 
             document.getElementById('view-login').classList.add('hidden');
             document.getElementById('view-dashboard').classList.remove('hidden');
