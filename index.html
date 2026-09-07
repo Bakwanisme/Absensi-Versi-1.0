@@ -250,13 +250,19 @@
                                 <p class="text-gray-400 text-sm italic text-center py-4">Belum ada data pindaian hari ini.</p>
                             </div>
                             
-                            <div class="mt-8 border-t pt-4">
-                                <p class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Input Manual (Darurat)</p>
-                                <div class="flex gap-2">
-                                    <input type="text" id="manualNisn" placeholder="Masukkan NISN Siswa" class="flex-1 px-3 py-2 border rounded-xl focus:outline-none focus:border-primary text-sm font-mono">
-                                    <button onclick="manualAttendance()" class="bg-accent hover:bg-accentHover text-white px-4 py-2 rounded-xl font-bold text-sm">Catat</button>
-                                </div>
-                            </div>
+                            <div class="mt-4 border-t pt-4">
+    <p class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Input Manual (Darurat)</p>
+    <div class="flex gap-2 mb-2">
+        <input type="text" id="manualNisn" placeholder="Masukkan NISN Siswa" class="flex-1 px-3 py-2 border rounded-xl focus:outline-none focus:border-primary text-sm font-mono">
+        <select id="manualStatus" class="px-3 py-2 border rounded-xl text-sm font-bold bg-white focus:outline-none">
+            <option value="Hadir">Hadir</option>
+            <option value="Izin">Izin</option>
+            <option value="Sakit">Sakit</option>
+        </select>
+    </div>
+    <button onclick="manualAttendance()" class="w-full bg-accent hover:bg-accentHover text-white px-4 py-2 rounded-xl font-bold text-sm">Catat Kehadiran</button>
+</div>
+
                         </div>
                     </div>
                 </div>
@@ -347,73 +353,106 @@
             </div>
 
             <!-- TAB GURU: REKAP & LAPORAN -->
-            <div id="tab-guru-rekap" class="tab-content hidden">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4">
-                    <div>
-                        <h2 class="text-3xl font-extrabold text-gray-800">Laporan & Rekapitulasi</h2>
-                        <p class="text-gray-500 font-semibold">Lihat dan cetak PDF rekap absensi / jurnal.</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="generatePDF()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 px-4 rounded-xl shadow-sm transition-colors flex items-center">
-                            <i class="fas fa-file-pdf mr-2"></i> Cetak PDF
-                        </button>
-                    </div>
-                </div>
+<div id="tab-guru-rekap" class="tab-content hidden">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4">
+        <div>
+            <h2 class="text-3xl font-extrabold text-gray-800">Manajemen Laporan Harian</h2>
+            <p class="text-gray-500 font-semibold">Kelola rekap harian kelas Anda sebelum dicetak menjadi dokumen resmi.</p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="togglePrintPreview()" class="bg-blue-100 text-primary hover:bg-blue-200 font-bold py-2.5 px-4 rounded-xl transition-colors flex items-center text-sm">
+                <i class="fas fa-eye mr-2"></i> Pratinjau Lembar Cetak
+            </button>
+            <button onclick="generatePDF()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 px-4 rounded-xl shadow-sm transition-colors flex items-center text-sm">
+                <i class="fas fa-file-pdf mr-2"></i> Cetak PDF
+            </button>
+        </div>
+    </div>
 
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 overflow-x-auto relative">
-                    <div id="print-area" class="min-w-[700px] bg-white p-4">
-                        <div class="text-center mb-8 border-b-2 border-black pb-4">
-                            <h1 class="text-2xl font-bold uppercase">Laporan Absensi & Jurnal Kelas</h1>
-                            <h2 class="text-xl font-bold">SDN Karduluk IV</h2>
-                            <p id="print-subtitle" class="text-gray-600">Bulan: <span id="lblBulan">...</span> | Kelas: <span id="lblKelas">1</span></p>
-                        </div>
+    <!-- BAGIAN 1: DASHBOR KELOLA HARIAN (INTERAKTIF) -->
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-6">
+        <div class="flex justify-between items-center mb-4 border-b pb-3">
+            <h3 class="font-bold text-gray-800 text-lg"><i class="fas fa-calendar-alt text-primary mr-2"></i>Daftar Aktivitas & Absensi Harian</h3>
+            <input type="date" id="filterTanggalRekap" onchange="renderLaporanUI()" class="px-3 py-2 rounded-xl border text-sm font-bold bg-gray-50 focus:outline-none">
+        </div>
 
-                        <h3 class="font-bold text-lg mb-2">A. Rekap Absensi Terakhir</h3>
-                        <table class="w-full text-left border-collapse border border-gray-300 mb-8 text-sm">
-                            <thead>
-                                <tr class="bg-gray-100">
-                                    <th class="border border-gray-300 p-2">Tanggal</th>
-                                    <th class="border border-gray-300 p-2">NISN</th>
-                                    <th class="border border-gray-300 p-2">Nama Siswa</th>
-                                    <th class="border border-gray-300 p-2">Status</th>
-                                    <th class="border border-gray-300 p-2">Waktu</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableRekapAbsen">
-                                <tr><td colspan="5" class="text-center p-4 text-gray-500">Belum ada data</td></tr>
-                            </tbody>
-                        </table>
-
-                        <h3 class="font-bold text-lg mb-2">B. Jurnal & Catatan Karakter</h3>
-                        <table class="w-full text-left border-collapse border border-gray-300 mb-12 text-sm">
-                            <thead>
-                                <tr class="bg-gray-100">
-                                    <th class="border border-gray-300 p-2">Tanggal</th>
-                                    <th class="border border-gray-300 p-2">Mata Pelajaran</th>
-                                    <th class="border border-gray-300 p-2">Materi</th>
-                                    <th class="border border-gray-300 p-2">Catatan Siswa</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableRekapJurnal">
-                                <tr><td colspan="4" class="text-center p-4 text-gray-500">Belum ada data</td></tr>
-                            </tbody>
-                        </table>
-
-                        <div class="flex justify-between mt-16 pt-8">
-                            <div class="text-center">
-                                <p class="mb-16">Mengetahui,<br>Kepala SDN Karduluk IV</p>
-                                <p class="font-bold underline">WIDAYANTI, S.Pd., M.Pd.</p>
-                                <p>NIP. 198609222009012003</p>
-                            </div>
-                            <div class="text-center">
-                                <p class="mb-16">Karduluk, <span class="print-tanggal">...</span><br>Guru Kelas</p>
-                                <p class="font-bold underline" id="print-nama-guru">Nama Guru</p>
-                                <p>NIP. .........................</p>
-                            </div>
-                        </div>
-                    </div>
+        <div class="space-y-4">
+            <div>
+                <h4 class="font-bold text-sm text-gray-700 mb-2">Rekap Absensi Siswa Hari Ini</h4>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead class="bg-gray-50 text-gray-600">
+                            <tr>
+                                <th class="p-2.5 border-b">NISN</th>
+                                <th class="p-2.5 border-b">Nama Siswa</th>
+                                <th class="p-2.5 border-b">Status Kehadiran</th>
+                                <th class="p-2.5 border-b text-center">Aksi / Ubah Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelManajemenAbsen">
+                            <!-- Diisi via JS -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- BAGIAN 2: LEMBARAN SIAP CETAK (TERSEMBUNYI SECARA DEFAULT / MUNCUL SAAT PRATINJAU) -->
+    <div id="wrapper-print-area" class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 overflow-x-auto hidden">
+        <div id="print-area" class="min-w-[700px] bg-white p-4">
+            <div class="text-center mb-8 border-b-2 border-black pb-4">
+                <h1 class="text-2xl font-bold uppercase">Laporan Absensi & Jurnal Kelas</h1>
+                <h2 class="text-xl font-bold">SDN Karduluk IV</h2>
+                <p id="print-subtitle" class="text-gray-600">Bulan: <span id="lblBulan">...</span> | Kelas: <span id="lblKelas">1</span></p>
+            </div>
+
+            <h3 class="font-bold text-lg mb-2">A. Rekap Absensi</h3>
+            <table class="w-full text-left border-collapse border border-gray-300 mb-8 text-sm">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border border-gray-300 p-2">Tanggal</th>
+                        <th class="border border-gray-300 p-2">NISN</th>
+                        <th class="border border-gray-300 p-2">Nama Siswa</th>
+                        <th class="border border-gray-300 p-2">Status</th>
+                        <th class="border border-gray-300 p-2">Waktu</th>
+                    </tr>
+                </thead>
+                <tbody id="tableRekapAbsen">
+                    <tr><td colspan="5" class="text-center p-4 text-gray-500">Belum ada data</td></tr>
+                </tbody>
+            </table>
+
+            <h3 class="font-bold text-lg mb-2">B. Jurnal Harian</h3>
+            <table class="w-full text-left border-collapse border border-gray-300 mb-12 text-sm">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border border-gray-300 p-2">Tanggal</th>
+                        <th class="border border-gray-300 p-2">Mata Pelajaran</th>
+                        <th class="border border-gray-300 p-2">Materi</th>
+                        <th class="border border-gray-300 p-2">Catatan Siswa</th>
+                    </tr>
+                </thead>
+                <tbody id="tableRekapJurnal">
+                    <tr><td colspan="4" class="text-center p-4 text-gray-500">Belum ada data</td></tr>
+                </tbody>
+            </table>
+
+            <div class="flex justify-between mt-16 pt-8">
+                <div class="text-center">
+                    <p class="mb-16">Mengetahui,<br>Kepala SDN Karduluk IV</p>
+                    <p class="font-bold underline">WIDAYANTI, S.Pd., M.Pd.</p>
+                    <p>NIP. 198609222009012003</p>
+                </div>
+                <div class="text-center">
+                    <p class="mb-16">Sumenep, <span class="print-tanggal">...</span><br>Guru Kelas</p>
+                    <p class="font-bold underline" id="print-nama-guru">Nama Guru</p>
+                    <p>NIP. .........................</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
             <!-- TAB GURU: PENGATURAN -->
             <div id="tab-guru-setting" class="tab-content hidden">
@@ -897,87 +936,100 @@
 
         function manualAttendance() {
             const nisn = document.getElementById('manualNisn').value.trim();
+            const status = document.getElementById('manualStatus').value; // Ambil nilai dari select status
             if (!nisn) return showToast("Masukkan NISN siswa!", "warning");
-            recordPresence(nisn);
+    
+            recordPresence(nisn, status); // Kirim status ke recordPresence
             document.getElementById('manualNisn').value = '';
         }
 
+
         // VALIDASI NISN & CATAT ABSENSI
-        async function recordPresence(nisn) {
+        async function recordPresence(nisn, customStatus = 'Hadir') {
             const now = new Date();
             const tglStr = now.toLocaleDateString('id-ID');
             const waktuStr = now.toLocaleTimeString('id-ID');
-
-            // 1. CARI DAN VALIDASI NISN DI DATABASE SISWA
+ 
+        // 1. CARI DAN VALIDASI NISN DI DATABASE SISWA
             const sourceSiswa = state.allStudents.length > 0 ? state.allStudents : state.mockSiswa;
             const foundSiswa = sourceSiswa.find(s => String(s.nisn) === String(nisn));
 
-            // JIKA KODE QR / NISN TIDAK DIKENALI
             if (!foundSiswa) {
-                showToast(`QR Code Tidak Dikenali! NISN (${nisn}) tidak terdaftar di database.`, "error");
-                return false;
-            }
+            showToast(`QR Code Tidak Dikenali! NISN (${nisn}) tidak terdaftar di database.`, "error");
+            return false;
+       }
 
-            // 2. CEK APAKAH SISWA SUDAH ABSEN HARI INI
-            const alreadyScanned = state.mockAbsensi.find(a => String(a.nisn) === String(nisn) && a.tanggal === tglStr);
-            if (alreadyScanned) {
-                showToast(`Siswa "${foundSiswa.nama}" sudah tercatat Hadir hari ini (${alreadyScanned.waktuMasuk})!`, "warning");
-                return false;
-            }
+        // 2. CEK APAKAH SISWA SUDAH ABSEN HARI INI
+           const alreadyScanned = state.mockAbsensi.find(a => String(a.nisn) === String(nisn) && a.tanggal === tglStr);
+           if (alreadyScanned) {
+           showToast(`Siswa "${foundSiswa.nama}" sudah tercatat (${alreadyScanned.status}) hari ini!`, "warning");
+           return false;
+       }
 
-            // 3. JIKA VALID & BELUM ABSEN -> CATAT KE PRESENSI
-            const logEntry = {
-                timestamp: now.toISOString(),
-                tanggal: tglStr,
-                nisn: nisn,
-                nama: foundSiswa.nama,
-                kelas: foundSiswa.kelas,
-                status: 'Hadir',
-                waktuMasuk: waktuStr
-            };
+        // 3. CATAT KE PRESENSI DENGAN STATUS SESUAI PILIHAN
+           const logEntry = {
+              timestamp: now.toISOString(),
+              tanggal: tglStr,
+              nisn: nisn,
+              nama: foundSiswa.nama,
+              kelas: foundSiswa.kelas, // Menandai kelas siswa
+              pembuat: state.user.username, // Menandai guru yang menginput        
+              status: customStatus, // Menggunakan status pilihan (Hadir/Izin/Sakit)
+              waktuMasuk: waktuStr
+       };
 
-            state.mockAbsensi.unshift(logEntry);
-            updateRecentScans();
-            showToast(`Absen Berhasil: ${foundSiswa.nama} (Kelas ${foundSiswa.kelas})`, "success");
 
-            // 4. SYNC KE GOOGLE SHEETS JIKA TIDAK MOCK
-            if (!state.isMockMode && state.gasUrl) {
-                try {
-                    await fetch(state.gasUrl, {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            action: "recordAttendance",
-                            sheetId: state.sheetId,
-                            ...logEntry
-                        })
-                    });
-                } catch (e) {
-                    console.error("Gagal sync presensi ke GAS:", e);
-                    showToast("Presensi tersimpan di memori lokal (Server Offline)", "warning");
-                }
-            }
-            return true;
+          state.mockAbsensi.unshift(logEntry);
+          updateRecentScans();
+          showToast(`Absen Berhasil: ${foundSiswa.nama} [${customStatus}]`, "success");
+
+       // 4. SYNC KE GOOGLE SHEETS JIKA TIDAK MOCK
+          if (!state.isMockMode && state.gasUrl) {
+          try {
+            await fetch(state.gasUrl, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: "recordAttendance",
+                    sheetId: state.sheetId,
+                    ...logEntry
+                })
+            });
+        } catch (e) {
+            console.error("Gagal sync presensi ke GAS:", e);
+        }
+        }
+          return true;
         }
 
         function updateRecentScans() {
             const container = document.getElementById('recentScans');
             if (state.mockAbsensi.length === 0) {
-                container.innerHTML = `<p class="text-gray-400 text-sm italic text-center py-4">Belum ada data pindaian hari ini.</p>`;
-                return;
-            }
-            container.innerHTML = state.mockAbsensi.slice(0, 5).map(item => `
-                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-xl border border-blue-100 animate-pulse">
-                    <div>
-                        <p class="font-bold text-gray-800 text-sm">${item.nama}</p>
-                        <p class="text-xs text-gray-500">NISN: ${item.nisn} | Kelas ${item.kelas}</p>
-                    </div>
-                    <div class="text-right">
-                        <span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full"><i class="fas fa-check-circle mr-1"></i>${item.status}</span>
-                        <p class="text-xs text-gray-400 mt-1">${item.waktuMasuk}</p>
-                    </div>
-                </div>
-            `).join('');
+            container.innerHTML = `<p class="text-gray-400 text-sm italic text-center py-4">Belum ada data pindaian hari ini.</p>`;
+            return;
+       }
+        container.innerHTML = state.mockAbsensi.slice(0, 5).map(item => {
+        // Tentukan warna badge berdasarkan status
+           let statusBadgeClass = "bg-green-100 text-green-700";
+           if (item.status === 'Izin') {
+            statusBadgeClass = "bg-blue-100 text-blue-700";
+        } else if (item.status === 'Sakit') {
+            statusBadgeClass = "bg-yellow-100 text-yellow-800";
         }
+
+        return `
+            <div class="flex items-center justify-between p-3 bg-blue-50 rounded-xl border border-blue-100 animate-pulse">
+                <div>
+                    <p class="font-bold text-gray-800 text-sm">${item.nama}</p>
+                    <p class="text-xs text-gray-500">NISN: ${item.nisn} | Kelas ${item.kelas}</p>
+                </div>
+                <div class="text-right">
+                    <span class="${statusBadgeClass} text-xs font-bold px-2 py-1 rounded-full"><i class="fas fa-check-circle mr-1"></i>${item.status}</span>
+                    <p class="text-xs text-gray-400 mt-1">${item.waktuMasuk}</p>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
 
         // Silent Load Data Siswa untuk Validasi
         async function fetchStudentListSilent() {
@@ -1065,52 +1117,123 @@
         }
 
         function renderLaporanUI() {
-            const now = new Date();
-            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            document.getElementById('lblBulan').innerText = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
-            document.querySelectorAll('.print-tanggal').forEach(el => el.innerText = `${now.getDate()} ${monthNames[now.getMonth()]} ${now.getFullYear()}`);
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const todayStr = `${year}-${month}-${day}`;
 
-            const tbodyAbsen = document.getElementById('tableRekapAbsen');
-            if (state.mockAbsensi.length === 0) {
-                tbodyAbsen.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-gray-500">Belum ada data absensi hari ini</td></tr>`;
-            } else {
-                tbodyAbsen.innerHTML = state.mockAbsensi.map(a => `
-                    <tr>
-                        <td class="border p-2">${a.tanggal}</td>
-                        <td class="border p-2 font-mono">${a.nisn}</td>
-                        <td class="border p-2 font-bold">${a.nama}</td>
-                        <td class="border p-2"><span class="text-green-600 font-bold">${a.status}</span></td>
-                        <td class="border p-2">${a.waktuMasuk}</td>
+    const filterTglEl = document.getElementById('filterTanggalRekap');
+    if (filterTglEl && !filterTglEl.value) {
+        filterTglEl.value = todayStr;
+    }
+    const tanggalPilih = filterTglEl ? filterTglEl.value : todayStr;
+
+    // Konversi format tanggal ke format lokal (DD/MM/YYYY) untuk pencocokan rekap
+    const [thn, bln, tgl] = tanggalPilih.split('-');
+    const tanggalFormatted = `${parseInt(tgl)}/${parseInt(bln)}/${thn}`;
+
+    const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    document.getElementById('lblBulan').innerText = `${monthNames[parseInt(bln)-1]} ${thn}`;
+    document.querySelectorAll('.print-tanggal').forEach(el => el.innerText = `${parseInt(tgl)} ${monthNames[parseInt(bln)-1]} ${thn}`);
+
+    // Filter isolasi kelas
+    const kelasAktif = state.user.role === 'admin' ? '1' : state.user.kelas;
+    const absensiKelasIni = state.user.role === 'admin'
+        ? state.mockAbsensi
+        : state.mockAbsensi.filter(a => String(a.kelas) === String(kelasAktif));
+
+    const jurnalKelasIni = state.user.role === 'admin'
+        ? state.mockJurnal
+        : state.mockJurnal.filter(j => String(j.kelas) === String(kelasAktif));
+
+    // RENDER TABEL MANAJEMEN HARIAN INTERAKTIF
+    const sourceSiswa = state.allStudents.length > 0 ? state.allStudents : state.mockSiswa;
+    const siswaKelas = sourceSiswa.filter(s => String(s.kelas) === String(kelasAktif));
+    const tbodyManajemen = document.getElementById('tabelManajemenAbsen');
+
+    if (tbodyManajemen) {
+        if (siswaKelas.length === 0) {
+            tbodyManajemen.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-gray-400">Tidak ada data siswa untuk kelas ini.</td></tr>`;
+        } else {
+            tbodyManajemen.innerHTML = siswaKelas.map(s => {
+                const absenRecord = absensiKelasIni.find(a => String(a.nisn) === String(s.nisn) && a.tanggal === tanggalFormatted);
+                const statusAktif = absenRecord ? absenRecord.status : 'Belum Absen';
+
+                let badgeColor = "bg-gray-100 text-gray-600";
+                if (statusAktif === 'Hadir') badgeColor = "bg-green-100 text-green-700";
+                if (statusAktif === 'Izin') badgeColor = "bg-blue-100 text-blue-700";
+                if (statusAktif === 'Sakit') badgeColor = "bg-yellow-100 text-yellow-800";
+
+                return `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-2.5 font-mono text-xs">${s.nisn}</td>
+                        <td class="p-2.5 font-bold text-gray-800">${s.nama}</td>
+                        <td class="p-2.5"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${badgeColor}">${statusAktif}</span></td>
+                        <td class="p-2.5 text-center space-x-1">
+                            <button onclick="ubahStatusAbsensiInteraktif('${s.nisn}', '${tanggalFormatted}', 'Hadir')" class="bg-green-100 text-green-700 hover:bg-green-200 px-2 py-1 rounded text-xs font-bold">Hadir</button>
+                            <button onclick="ubahStatusAbsensiInteraktif('${s.nisn}', '${tanggalFormatted}', 'Izin')" class="bg-blue-100 text-blue-700 hover:bg-blue-200 text-blue-700 px-2 py-1 rounded text-xs font-bold">Izin</button>
+                            <button onclick="ubahStatusAbsensiInteraktif('${s.nisn}', '${tanggalFormatted}', 'Sakit')" class="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 px-2 py-1 rounded text-xs font-bold">Sakit</button>
+                        </td>
                     </tr>
-                `).join('');
-            }
-
-            const tbodyJurnal = document.getElementById('tableRekapJurnal');
-            if (state.mockJurnal.length === 0) {
-                tbodyJurnal.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-gray-500">Belum ada data jurnal hari ini</td></tr>`;
-            } else {
-                tbodyJurnal.innerHTML = state.mockJurnal.map(j => {
-                    // Gabungkan daftar siswa menjadi list list HTML di dalam satu sel
-                    let listSiswaHtml = "-";
-                    if (j.catatanSiswaList && j.catatanSiswaList.length > 0) {
-                        listSiswaHtml = `<ul class="list-disc pl-4 space-y-1">` + j.catatanSiswaList.map(s => `
-                            <li><strong>${s.nama}</strong>: ${s.catatan} <span class="text-xs px-1.5 py-0.2 rounded font-bold ${s.tipe === 'Positif' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800'}">[${s.tipe}]</span></li>
-                        `).join('') + `</ul>`;
-                    } else if (j.catatanSiswa) {
-                        listSiswaHtml = `<strong>${j.catatanSiswa}</strong> [${j.tipeCatatan || ''}]`;
-                    }
-
-                    return `
-                        <tr>
-                            <td class="border p-2 align-top">${j.tanggal} <br><span class="text-xs text-gray-500 font-bold">${j.jamJp || ''}</span></td>
-                            <td class="border p-2 align-top font-bold">${j.mataPelajaran}</td>
-                            <td class="border p-2 align-top">${j.ringkasanMateri}</td>
-                            <td class="border p-2 align-top">${listSiswaHtml}</td>
-                        </tr>
-                    `;
-                }).join('');
-            }
+                `;
+            }).join('');
         }
+    }
+
+      // RENDER TABEL CETAK (ABSENSI - SEMUA SISWA, OTOMATIS 'Tidak Hadir' JIKA BELUM ABSEN)
+    const tbodyAbsen = document.getElementById('tableRekapAbsen');
+    if (siswaKelas.length === 0) {
+        tbodyAbsen.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-gray-500">Tidak ada data siswa untuk kelas ini</td></tr>`;
+    } else {
+        tbodyAbsen.innerHTML = siswaKelas.map((s) => {
+            const absenRecord = absensiKelasIni.find(a => String(a.nisn) === String(s.nisn) && a.tanggal === tanggalFormatted);
+            const status = absenRecord ? absenRecord.status : 'Tidak Hadir';
+            const waktu = absenRecord ? (absenRecord.waktuMasuk || '-') : '-';
+
+            let statusColor = "text-gray-800"; // Merah untuk Tidak Hadir
+            if (status === 'Hadir') statusColor = "text-gray-800";
+            if (status === 'Izin') statusColor = "text-gray-800";
+            if (status === 'Sakit') statusColor = "text-gray-800";
+
+            return `
+                <tr>
+                    <td class="border p-2">${tanggalFormatted}</td>
+                    <td class="border p-2 font-mono">${s.nisn}</td>
+                    <td class="border p-2 font-bold">${s.nama}</td>
+                    <td class="border p-2"><span class="${statusColor} font-bold">${status}</span></td>
+                    <td class="border p-2">${waktu}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // RENDER TABEL CETAK (JURNAL)
+    const tbodyJurnal = document.getElementById('tableRekapJurnal');
+    const filteredJurnalByDate = jurnalKelasIni.filter(j => j.tanggal === tanggalPilih);
+    if (filteredJurnalByDate.length === 0) {
+        tbodyJurnal.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-gray-500">Belum ada data jurnal pada tanggal ini</td></tr>`;
+    } else {
+        tbodyJurnal.innerHTML = filteredJurnalByDate.map(j => {
+            let listSiswaHtml = "-";
+            if (j.catatanSiswaList && j.catatanSiswaList.length > 0) {
+                listSiswaHtml = `<ul class="list-disc pl-4 space-y-1">` + j.catatanSiswaList.map(s => `
+                    <li><strong>${s.nama}</strong>: ${s.catatan} <span class="text-xs px-1.5 py-0.2 rounded font-bold ${s.tipe === 'Positif' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800'}">[${s.tipe}]</span></li>
+                `).join('') + `</ul>`;
+            }
+
+            return `
+                <tr>
+                    <td class="border p-2 align-top">${j.tanggal} <br><span class="text-xs text-gray-500 font-bold">${j.jamJp || ''}</span></td>
+                    <td class="border p-2 align-top font-bold">${j.mataPelajaran}</td>
+                    <td class="border p-2 align-top">${j.ringkasanMateri}</td>
+                    <td class="border p-2 align-top">${listSiswaHtml}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+    
+}
 
         // --- PENGATURAN DATABASE ---
         function saveSettings() {
@@ -1577,13 +1700,15 @@ async function submitJurnalGabungan(e) {
     });
 
     const payloadData = {
-        tanggal,
-        jamJp: jp,
-        mataPelajaran: mapel,
-        ringkasanMateri: materi,
-        catatanSiswaList: listCatatanSiswa,
-        timestamp: new Date().toISOString()
-    };
+    tanggal,
+    jamJp: jp,
+    mataPelajaran: mapel,
+    ringkasanMateri: materi,
+    catatanSiswaList: listCatatanSiswa,
+    kelas: state.user.kelas, // Mengambil kelas dari user yang login
+    pembuat: state.user.username,
+    timestamp: new Date().toISOString()
+};
 
     state.mockJurnal.unshift(payloadData);
     renderRiwayatJurnalGuru();
@@ -1625,8 +1750,12 @@ async function submitJurnalGabungan(e) {
 function renderRiwayatJurnalGuru() {
     const tbody = document.getElementById('tabelRiwayatJurnalGuru');
     if (!tbody) return;
+    
+    const dataFiltered = state.user.role === 'admin' 
+        ? state.mockJurnal 
+        : state.mockJurnal.filter(j => String(j.kelas) === String(state.user.kelas));
 
-    if (state.mockJurnal.length === 0) {
+    if (dataFiltered.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-gray-400 italic">Belum ada jurnal yang diinput hari ini.</td></tr>`;
         return;
     }
@@ -1703,6 +1832,42 @@ function hapusJurnal(index) {
     state.mockJurnal.splice(index, 1);
     renderRiwayatJurnalGuru();
     showToast("Data jurnal berhasil dihapus.", "success");
+}
+
+// Fungsi untuk memunculkan atau menyembunyikan pratinjau lembar cetak resmi
+function togglePrintPreview() {
+    const wrapper = document.getElementById('wrapper-print-area');
+    wrapper.classList.toggle('hidden');
+    if (!wrapper.classList.contains('hidden')) {
+        wrapper.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// Fungsi pembantu untuk mengubah status absensi langsung dari tabel manajemen harian
+function ubahStatusAbsensiInteraktif(nisn, tanggal, statusBaru) {
+    let absensiRecord = state.mockAbsensi.find(a => String(a.nisn) === String(nisn) && a.tanggal === tanggal);
+    
+    if (absensiRecord) {
+        absensiRecord.status = statusBaru;
+        absensiRecord.waktuMasuk = new Date().toLocaleTimeString('id-ID');
+    } else {
+        // Jika belum tercatat, buat entri baru untuk tanggal tersebut
+        const sourceSiswa = state.allStudents.length > 0 ? state.allStudents : state.mockSiswa;
+        const siswa = sourceSiswa.find(s => String(s.nisn) === String(nisn));
+        if (siswa) {
+            state.mockAbsensi.unshift({
+                timestamp: new Date().toISOString(),
+                tanggal: tanggal,
+                nisn: nisn,
+                nama: siswa.nama,
+                kelas: siswa.kelas,
+                status: statusBaru,
+                waktuMasuk: new Date().toLocaleTimeString('id-ID')
+            });
+        }
+    }
+    showToast(`Status absensi diperbarui menjadi ${statusBaru}`, "success");
+    renderLaporanUI();
 }
         
     </script>
